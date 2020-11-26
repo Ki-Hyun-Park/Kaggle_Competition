@@ -1,0 +1,49 @@
+library(data.table)
+
+## Import train.csv and exclude non-needed variables
+train <- fread("train.csv", stringsAsFactors = TRUE)
+train2 <- train[, -c(1:2, 4, 5, 8)]       	
+
+## Import test.csv and exclude non-needed variables
+test <- fread("test.csv", header = TRUE, stringsAsFactors = TRUE)
+test2 <- test[, -c(2:4, 7)]
+
+
+## Split train.csv into training and testing
+set.seed(123)
+train.i <- sample(1:nrow(train2), 0.75 * nrow(train2), replace = FALSE)
+train.tr <- train2[train.i, ]
+train.te <- train2[-train.i, ]
+
+
+## Prepare training and testing data sets for Ridge regression
+train.sc <- model.matrix(HTWins ~., data = train2)
+train.sc.x <- train.sc[train.i, -1]      	# exclude the intercept
+train.sc.y <- train2$HTWins[train.i]
+test.sc.x <- train.sc[-train.i, -1]       	# exclude the intercept
+test.sc.y <- train2$HTWins[-train.i]
+
+ridge_pred <- predict(train.ridge, s = cv.ridge$lambda.min, newx = test.sc.x,
+                  	type = "class")
+table(ridge_pred, test.sc.y)
+mean(ridge_pred == test.sc.y)
+
+
+### Apply Ridge on test.csv
+test.sc <- model.matrix(~., data = test2[, -1])[, -1]
+
+test.pred <- predict(train.ridge, s = cv.ridge$lambda.min, newx = test.sc,
+                  	type = "class")
+table(test.pred)
+
+test.predict <- bind_cols(id = test2$id, HTWins = test.pred)
+
+write.csv(test.predict, "test_predict.csv", row.names = FALSE)## Train “train.csv” by Ridge
+library(glmnet)
+set.seed(123)
+train.ridge <- glmnet(train.sc.x, train.sc.y, alpha = 0, lambda = lambda.v,
+                  	family = "binomial")
+ridge_coef <- coef(train.ridge)
+cv.ridge <- cv.glmnet(train.sc.x, train.sc.y, alpha = 0, family = "binomial") # cross validations for ridge
+cv.ridge$lambda.min  	# best lambda that minimizes the MSE
+predict(train.ridge, s = cv.ridge$lambda.min, type = "coefficients")
