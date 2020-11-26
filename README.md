@@ -1,0 +1,2 @@
+# Kaggle_Competition
+This project asks you to predict the winning team based on data studiously collected by a basketball fan and a former analyst for the Dodgers. The team names and leagues have been disguised, and the dates removed so that you are forced to use the data, and not your knowledge of the outcomes, for the prediction. The response variable indicates whether, for a given game, the hometeam wins. Roughly 1600 games have been set aside, and you have been given "testing data" that you use to predict whether or not the hometeam wins in each game.
