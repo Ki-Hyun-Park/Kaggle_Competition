@@ -1,0 +1,12 @@
+train <- fread("train.csv", stringsAsFactors = TRUE)
+train2 <- train[, -c(1, 2, 4, 5, 6, 7, 8)]
+## Split train.csv into training and testing 
+set.seed(123)
+train.i <- sample(1:nrow(train2), 0.75 * nrow(train2), replace = FALSE)
+train.tr <- train2[train.i, ]
+train.te <- train2[-train.i, ]
+
+train.tr01 <- train.tr
+train.tr01$HTWins01 <- as.numeric(train.tr$HTWins == "Yes")
+train.te01 <- train.te
+train.te01$HTWins01 <- as.numeric(train.te$HTWins == "Yes")
