@@ -1,3 +1,12 @@
+## DataSet with the important predictors we found via boxplots minus collinearity issues ##
+
+myvars <- c("VT.TS.tpm", "VT.TS.dreb", "VT.TA.fgm", "VT.TA.ast", "VT.TA.blk", "VT.TA.pts", "VT.OTA.dreb", "VT.OTA.blk", "VT.S1.plmin", "VT.S1.pts", "VT.S2.plmin", "VT.S3.plmin", "VT.S4.plmin", "VT.S5.plmin", "HT.TS.dreb", "HT.TS.ast", "HT.TS.pts", "HT.TA.fgm", "HT.TA.ast", "HT.TA.pts", "HT.OTA.fta", "HT.S1.plmin", "HT.S2.plmin", "HT.S3.plmin", "HT.S4.plmin", "HT.S5.plmin", "HTWins")
+
+newtrain <- bball.train[myvars]
+
+
+IMPORTANT PREDICTORS:
+
 ## VT.TS.tpm
          dreb
       .TA.fgm
