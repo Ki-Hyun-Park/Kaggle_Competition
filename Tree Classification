@@ -1,0 +1,33 @@
+```{r}
+
+library(tree)
+train.tree <- tree(HTWins~., data = training[, -(2:5)])
+summary(train.tree)
+plot(train.tree)
+text(train.tree, pretty = TRUE)
+
+
+train.tree.pred <- predict(train.tree, newdata = testing, type = "class")
+# type = "vector" gives the probability of beloging to each class.
+# type = "class" gives the predicted class of the new observations.
+
+table(train.tree.pred, testing$HTWins)
+mean(train.tree.pred == testing$HTWins)
+
+
+
+## Prune the tree
+
+train.cv.tree <- cv.tree(train.tree, FUN = prune.misclass)
+
+plot(train.cv.tree$dev ~ train.cv.tree$size)
+pruned.fit <- prune.misclass(train.tree, best = 3)
+plot(pruned.fit)
+text(pruned.fit, pretty = TRUE)
+summary(pruned.fit)
+
+pruned.pred <- predict(pruned.fit, newdata = train.te, type = "class")
+table(pruned.pred, train.te$HTWins)
+mean(pruned.pred == train.te$HTWins)
+
+```
