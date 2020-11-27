@@ -1,0 +1,13 @@
+library(MASS)
+
+lda.train <- lda(HTWins ~., data = training[, -(2:5)])
+lda.train
+lda.pred <- predict(lda.train, testing)$class
+table(lda.pred, testing$HTWins)
+mean(lda.pred == testing$HTWins, na.rm = TRUE)
+
+qda.train <- qda(HTWins ~ ., data = train.tr[, -c(2,3)])
+qda.train
+qda.pred <- predict(qda.train, newdata = train.te[, -c(1,2,3)])$class
+table(qda.pred, train.te$HTWins)
+mean(qda.pred == train.tr$HTWins, na.rm = TRUE)
