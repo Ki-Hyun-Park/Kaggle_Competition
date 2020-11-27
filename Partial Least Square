@@ -1,0 +1,20 @@
+# install.packages("pls")
+library(pls)
+set.seed(123)
+
+train.tr01 <- train.tr
+train.tr01$HTWins01 <- as.numeric(train.tr01$HTWins == "Yes")
+train.te01 <- train.te
+train.te01$HTWins01 <- as.numeric(train.te01$HTWins == "Yes")
+
+
+library(plsgenomics)
+train.pls <- pls.lda(Xtrain = train.tr[,-c(1,2,3)], Ytrain = train.tr$HTWins, Xtest = train.te[, -c(1,2,3)],
+     	       ncomp=3)
+
+train.pls.cv <- pls.lda.cv(Xtrain = train.tr[,-c(1,2,3)], Ytrain = train.tr$HTWins, ncomp = 20)
+train.pls.cv
+
+pls.pred <- train.pls$pred.lda.out$class
+
+mean(pls.pred == train.te$HTWins)
