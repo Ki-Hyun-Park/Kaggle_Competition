@@ -1,0 +1,21 @@
+library(dplyr)
+train.log <- glm(HTWins ~., data = train.tr, family = "binomial")
+summ.log <- summary(train.log)
+
+
+train.te.log.pred <- predict(train.log, newdata = train.te, type = "response")
+train.te.log.predYN <- ifelse(train.te.log.pred > 0.5, "Yes", "No")
+table(train.te.log.predYN, train.te$HTWins)
+mean(train.te.log.predYN == train.te$HTWins)
+
+
+### Applying logistic model to test.csv
+
+test.log.pred <- predict(log.sub3, newdata = test2, type = "response")
+test.log.pred01 <- ifelse(test.log.pred > 0.5, "Yes", "No")
+
+table(test.log.pred01)
+
+test.log.predict <- bind_cols(id = test2$id, HTWins = test.log.pred01)
+
+write.csv(test.log.predict, "test_log_predict.csv", row.names = FALSE)
