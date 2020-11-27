@@ -1,0 +1,17 @@
+library(ISLR)
+library(glmnet)
+i <- seq(10, -2, length = 100)    
+lambda.v <- 10^i    # create a sequence of lambda from 10^-2 to 10^10
+
+set.seed(123)
+train.lasso <- glmnet(train.sc.x, train.sc.y, alpha = 1, lambda = lambda.v, 
+                      family = "binomial")
+lasso_coef <- coef(train.lasso)
+cv.lasso <- cv.glmnet(train.sc.x, train.sc.y, alpha = 1, family = "binomial") # cross validations for lasso
+cv.lasso$lambda.min      # best lambda that minimizes the MSE
+predict(train.lasso, s = cv.lasso$lambda.min, type = "coefficients")
+
+lasso_pred <- predict(train.lasso, s = cv.lasso$lambda.min, newx = test.sc.x, 
+                      type = "class")
+table(lasso_pred, test.sc.y)
+mean(lasso_pred == test.sc.y)
