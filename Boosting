@@ -1,0 +1,38 @@
+```{r}
+
+train.tr01 <- train.tr
+train.te01 <- train.te
+
+train.tr01$HTWins01 <- as.numeric(train.tr01$HTWins == "Yes")   # 1 = Yes, 0 = No
+train.te01$HTWins01 <- as.numeric(train.te01$HTWins == "Yes")   # 1 = Yes, 0 = No
+
+
+library(gbm)
+
+set.seed(123)
+train.boost <- gbm(HTWins01 ~., data = train.tr01[, -1], 
+                 interaction.depth = 4, n.trees = 100, distribution = "bernoulli")
+summary(train.boost)    
+
+train.boost.pred <- predict(train.boost, newdata = train.te[, -1], n.trees = 100, 
+                          shrinkage = 0.01, type = "response")
+
+train.boost.predYN <- ifelse(train.boost.pred > 0.5, "Yes", "No") # if > 0.5, classified as survive
+
+table(train.boost.predYN, train.te01$HTWins)
+mean(train.boost.predYN == train.te01$HTWins)  # error rate
+
+
+## Apply gbm boosting to test.csv
+test.boost.pred <- predict(train.boost, newdata = test3[, -1], n.trees = 100, 
+                          shrinkage = 0.01, type = "response")
+
+test.boost.predYN <- ifelse(test.boost.pred > 0.5, "Yes", "No") # if > 0.5, classified as survive
+
+table(test.boost.predYN)
+
+test.boost.predict <- bind_cols(id = test3$id, HTWins = test.boost.predYN)
+
+write.csv(test.boost.predict, "test_boost_predict.csv", row.names = FALSE)
+
+```
