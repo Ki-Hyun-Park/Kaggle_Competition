@@ -1,0 +1,18 @@
+```{r}
+train.tr01 <- train.tr
+train.tr01$HTWins01 <- as.numeric(train.tr01$HTWins == "Yes")
+train.te01 <- train.te
+train.te01$HTWins01 <- as.numeric(train.te01$HTWins == "Yes")
+
+library(xgboost)
+
+set.seed(123)
+train.xgb <- xgboost(data = as.matrix(train.tr01[, -c(1:3, 60,61)]),
+                     label = train.tr01$HTWins01, nrounds = 200, objective='reg:logistic', 
+                     print_every_n = 0)
+                     
+xgb.pred <- predict(train.xgb, newdata = as.matrix(train.te01[, -c(1:3, 60, 61)]))
+xgb.pred01 <- as.numeric(xgb.pred > 0.5)
+mean(xgb.pred01 == train.te01$HTWins01)
+
+```
