@@ -1,0 +1,52 @@
+train <- fread("train.csv", stringsAsFactors = TRUE)
+train2 <- train[, -c(1, 2, 4, 5, 6, 7, 8)]
+## Split train.csv into training and testing 
+set.seed(123)
+train.i <- sample(1:nrow(train2), 0.75 * nrow(train2), replace = FALSE)
+train.tr <- train2[train.i, ]
+train.te <- train2[-train.i, ]
+
+
+library(pls)
+set.seed(123)
+
+train.tr01 <- train.tr
+train.tr01$HTWins01 <- as.numeric(train.tr$HTWins == "Yes")
+train.te01 <- train.te
+train.te01$HTWins01 <- as.numeric(train.te$HTWins == "Yes")
+
+# PC regression
+train.pcr <- pcr(HTWins01 ~. , data = train.tr01[, -1], scale = TRUE,
+                  validation = "CV")
+train.pcr$coefficients[,,13]
+validationplot(train.pcr, val.type = "MSEP")
+train.pcr$loadings
+train.pcr.pred <- predict(train.pcr,          # predict testing 
+                    newdata = train.te01, 
+                    ncomp = 13, type = "response")
+train.pcr.pred01 <- as.numeric(train.pcr.pred > 0.5)
+mse.df[, 5] <- mean(train.pcr.pred01 == train.te01$HTWins01)   # 0.6714286
+
+library(ggplot2)
+mse.df <- as.data.frame(t(mse.df))
+mse.df.used<- data.frame("Method" = rownames(mse.df),
+                         "Accuracy.Rate" = mse.df[, 1])
+
+p <- ggplot(data=mse.df.used, aes(x=Method, y=Accuracy.Rate, group = 1)) +
+  geom_line(linetype = "solid", color="green", size=1.2)+
+  geom_point(color="red", size=3) + ylab("Accuracy Rate") + 
+  labs(title = "Testing accuracy rate by methods")
+ggsave("AccuracyRate.jpg")
+
+## Applying PCA to test.csv
+
+train.pcr.pred <- predict(train.pcr,          # predict testing 
+                    newdata = test2, 
+                    ncomp = 13, type = "response")
+train.pcr.pred01 <- ifelse(train.pcr.pred > 0.5, "Yes", "No")
+
+library(dplyr)
+
+test.predict <- bind_cols(id = test2$id, HTWins = train.pcr.pred01)
+
+write.csv(test.predict, "test_predict3.csv", row.names = FALSE)
