@@ -1,0 +1,18 @@
+```{r}
+
+sqrt(ncol(training)-1)
+library(randomForest)
+
+train.forest <- randomForest(HTWins ~., data = training, mtry = 12,
+                           importance = TRUE)
+print(train.forest)
+
+varImpPlot(train.forest)    # check the important variables
+
+tuneRF(train.tr[, -1], train.tr$HTWins, stepFactor = 2)  # take out the response, helps to find the number of mtry
+
+train.forest.pred <- predict(train.forest, newdata = train.te, type = "class")
+table(train.forest.pred, train.te$HTWins)
+mean(train.forest.pred == train.te$HTWins)
+
+```
