@@ -1,2 +1,20 @@
-# Kaggle_Competition
-This project asks you to predict the winning team based on data studiously collected by a basketball fan and a former analyst for the Dodgers. The team names and leagues have been disguised, and the dates removed so that you are forced to use the data, and not your knowledge of the outcomes, for the prediction. The response variable indicates whether, for a given game, the hometeam wins. Roughly 1600 games have been set aside, and you have been given "testing data" that you use to predict whether or not the hometeam wins in each game.
+# NBA Game Results Prediction(Kaggle Competition)
+
+***
+
+- <p> The whole project was done in about 3 weeks and it was conducted by group of 3 people. </p>
+
+- As a group of 3 people, we:
+   <p>
+   - Created a modeling system that can predict the winning team in basketball games. With this, basketball fans can get a general idea of the winning team          solely based on the factors that actually have an impact on the outcome. <br/>
+
+   - Created binary response variable. <br/>
+
+   - Removed perfectly collinear(redundant) variables. <br/>
+   
+   - Randomly splitted the full training data into another set of training and testing data (at the ratio of 75:25). <br/>
+   
+   - Applied methods of Lasso, LDA, Logistic, PCR, Ridge and conducted modeling on training data. </p>
+   
+***
+
